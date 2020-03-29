@@ -1,6 +1,6 @@
 # A free API for COVID-19 data
 
-For all those, who are struggling with the (kind of weird) [Johns Hopkins University COVID-19 case data](https://github.com/CSSEGISandData/COVID-19) CSV files, we've created a **free** API that makes it easy to integrate the latest worldwide COVID-19 data into your application. The API uses official data from the European Centre for Disease Prevention and Control and delivers a clear and concise data structure for further processing, analysis etc.
+For all those, who are struggling with the (kind of weird) [Johns Hopkins University COVID-19 case data](https://github.com/CSSEGISandData/COVID-19) CSV files, we've created a **free** API that makes it easy to integrate the latest worldwide COVID-19 data into your application. The API uses official data from the European Centre for Disease Prevention and Control and delivers a clear and concise data structure for further processing, analysis etc. If you have any questions, do not hesitate to open an issue or to contact us. Also, check out our [website for data science and machine learning consulting and development](https://www.statworx.com/).
 
 ## Making a request
 
@@ -73,3 +73,6 @@ The original data does not contain the cumulative sum of cases. Furthermore the 
 
 The API is built using Python 3 and deployed using [Google Cloud Run](https://cloud.google.com/run?hl=en), a container-based serverless function framework in the cloud. You can check the code in our [github repository](https://github.com/STATWORX/covid-19-api).
 
+## Credits
+
+If you have any questions or remarks, do not hesitate to open an issue or to contact us.

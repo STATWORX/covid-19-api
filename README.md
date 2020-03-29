@@ -67,7 +67,7 @@ The API JSON response contains the following data points:
 
 ##  Why not use the original data?
 
-The original data does not contain the cumulative sum of cases. Furthermore the variable names are quite odd. Some population numbers are missing. Our data is arranged and named using best practices (e.g. snake case variable names).
+The original data does not contain the cumulative sum of cases. Furthermore the variable names are quite odd. Some population numbers are missing. Our data is arranged and named using best practices (e.g. snake case variable names) and augmented with cumulative case and death numbers.
 
 ## How did you do that?
 

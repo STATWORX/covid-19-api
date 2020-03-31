@@ -4,7 +4,7 @@ For all those, who are struggling with the (kind of weird) [Johns Hopkins Univer
 
 ## Making a request
 
-The API delivers data for 196 countries, queryable by their 2-character [country alpha codes](https://www.iban.com/country-codes) *or* names (e.g. "DE" or "Germany"). Depending on if you want to query by country name or code, you have to specify different query parameters (see code below). If you want to query all countries, use `{'country': 'All'}` or `{'code': 'ALL'}` in the payload. You can invoke the API using any programming language, e.g. Python:
+The API delivers data for 196 countries, queryable by their 2-character [country alpha codes](https://www.iban.com/country-codes). If you want to query all countries, use `{'code': 'ALL'}` in the payload. You can invoke the API using any programming language, e.g. Python:
 
 ```python
 import requests
@@ -12,7 +12,7 @@ import json
 import pandas as pd
 
 # POST to API
-payload = {'country': 'Germany'} # or {'code': 'DE'}
+payload = {'code': 'DE'}
 URL = 'https://api.statworx.com/covid'
 response = requests.post(url=URL, data=json.dumps(payload))
 

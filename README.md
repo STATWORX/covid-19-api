@@ -75,4 +75,4 @@ The API is built using Python 3 and deployed using [Google Cloud Run](https://cl
 
 ## Credits
 
-If you have any questions or remarks, do not hesitate to open an issue or to contact us.
+If you have any questions or remarks, do not hesitate to open an issue or to contact us. Also, if you use our API in your website or product, it would be great, if you could add a link to our website: https://www.statworx.com. Thank you and stay healthy!

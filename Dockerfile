@@ -2,8 +2,9 @@
 FROM python:3.7
 
 # Copy the file from your host to your current location
-COPY ./main.py /app/main.py
-COPY ./requirements.txt /app/requirements.txt
+COPY main.py /app/main.py
+COPY scraper.py /app/scraper.py
+COPY requirements.txt /app/requirements.txt
 
 # Set the working directory
 WORKDIR /app

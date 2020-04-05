@@ -1,55 +1,24 @@
 import json
 import requests
-import pandas as pd
 
+from scraper import ECDCScaper, WikiScraper
+from bs4 import BeautifulSoup
 from flask import Flask, request
 
+# Flask
 app = Flask(__name__)
 
-
-def to_numeric(df, columns):
-    """ Casting columns to numeric """
-    for col in columns:
-        df[col] = pd.to_numeric(df[col], errors='coerce')
-    return df
+# Scraper
+ecdc = ECDCScaper()
+wiki = WikiScraper()
 
 
-def parse_date(column):
-    """ Data preparation """
-    column = pd.to_datetime(column, format='%d/%m/%Y')
-    return column.dt.date.astype(str)
-
-
-def prepare_data(df):
-    """ Data prep for covid data """
-    df = df.drop('countryterritoryCode', axis=1)
-    df = df.rename(columns={'dateRep': 'date', 'countriesAndTerritories': 'country',
-                            'geoId': 'code', 'popData2018': 'population'})
-    df['date'] = parse_date(df['date'])
-    df.loc[df.country == 'Anguilla', 'population'] = 15094
-    df.loc[df.country == 'Eritrea', 'population'] = 4475000
-    df = to_numeric(df, ['day', 'month', 'year', 'cases', 'deaths', 'population'])
-    df = df.sort_values(by=['country', 'date'])
-    df['cases_cum'] = df.groupby(['country'])['cases'].cumsum()
-    df['deaths_cum'] = df.groupby(['country'])['deaths'].cumsum()
-    return df
-
-
-def load_data(url):
-    """ Imports data from url """
-    response = requests.get(url)
-    records = json.loads(response.text)['records']
-    df = pd.DataFrame.from_dict(records)
-    df = prepare_data(df)
-    return df
-
-
-@app.route('/covid', methods=['POST'])
+@app.route('/covid', methods=['GET', 'POST'])
 def handle_request():
     """ Request handler """
-    request_json = request.get_json(force=True)
     url = 'https://opendata.ecdc.europa.eu/covid19/casedistribution/json/'
-    data = load_data(url=url)
+    request_json = request.get_json(force=True)
+    data = ecdc.load_data(url=url)
     if 'type' in request_json:
         type = request_json['type']
     else:
@@ -72,6 +41,33 @@ def handle_request():
         payload = {'Error: please provide "country" or "code" in your payload.'}
         code = 400
     return json.dumps(payload), code
+
+
+@app.route('/covid/de', methods=['GET', 'POST'])
+def handle_request_de():
+    """ Request handler """
+    url = "https://de.wikipedia.org/wiki/COVID-19-Pandemie_in_Deutschland"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'lxml')
+
+    # Extract data from website
+    table_header = wiki.extract_header(soup)
+    table_cases = wiki.extract_cases(soup)
+    table_deaths = wiki.extract_deaths(soup)
+
+    # Get data
+    names = wiki.get_names(table_header)
+    cases = wiki.get_data(table_cases, names)
+    deaths = wiki.get_data(table_deaths, names)
+
+    # Data prep
+    df_cases = wiki.prepare_data(cases, variable='cases')
+    df_deaths = wiki.prepare_data(deaths, variable='deaths')
+    df_payload = wiki.join_data(df_cases, df_deaths)
+
+    # Payload
+    payload = df_payload.to_dict('list')
+    return json.dumps(payload), 200
 
 
 if __name__ == '__main__':

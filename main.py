@@ -3,14 +3,14 @@ import requests
 
 from scraper import ECDCScaper, WikiScraper
 from bs4 import BeautifulSoup
-from flask import Flask, request
-
-# Flask
-app = Flask(__name__)
+from flask import Flask, request, jsonify
 
 # Scraper
 ecdc = ECDCScaper()
 wiki = WikiScraper()
+
+# Flask
+app = Flask(__name__)
 
 
 @app.route('/covid', methods=['GET', 'POST'])
@@ -46,7 +46,7 @@ def handle_request():
 @app.route('/covid/de', methods=['GET', 'POST'])
 def handle_request_de():
     """ Request handler """
-    url = "https://de.wikipedia.org/wiki/COVID-19-Pandemie_in_Deutschland"
+    url = "https://de.wikipedia.org/wiki/COVID-19-Pandemie_in_Deutschland/Statistik"
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'lxml')
 
@@ -67,7 +67,7 @@ def handle_request_de():
 
     # Payload
     payload = df_payload.to_dict('list')
-    return json.dumps(payload), 200
+    return jsonify(payload), 200
 
 
 if __name__ == '__main__':

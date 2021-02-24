@@ -21,12 +21,21 @@ class ECDCScaper:
         column = pd.to_datetime(column, format='%d/%m/%Y')
         return column.dt.date.astype(str)
 
+    def extract_date(self, column):
+        """ Extract date components """
+
     def prepare_data(self, df):
         """ Data prep for covid data """
-        df = df.drop('countryterritoryCode', axis=1)
-        df = df.rename(columns={'dateRep': 'date', 'countriesAndTerritories': 'country',
-                                'geoId': 'code', 'popData2019': 'population', 'continentExp': 'continent'})
-        df['date'] = self.parse_date(df['date'])
+        df = df.drop(['countryterritoryCode', 'Cumulative_number_for_14_days_of_COVID-19_cases_per_100000'], axis=1)
+        df = df.rename(columns={'dateRep': 'date',
+                                'year_week': 'year_week',
+                                'cases_weekly': 'cases',
+                                'deaths_weekly': 'deaths',
+                                'countriesAndTerritories': 'country',
+                                'geoId': 'code',
+                                'popData2019': 'population',
+                                'continentExp': 'continent'})
+        df['date'] = self.parse_date(column=df['date'])
         df.loc[df.code == 'AI', 'population'] = 15094
         df.loc[df.code == 'ER', 'population'] = 4475000
         df.loc[df.code == 'FK', 'population'] = 2840
@@ -36,7 +45,7 @@ class ECDCScaper:
         df.loc[df.code == 'SH', 'population'] = 5633
         df.loc[df.code == 'EH', 'population'] = 500000
         df.loc[df.code == 'JPG11668', 'population'] = 0
-        df = self.to_numeric(df, ['day', 'month', 'year', 'cases', 'deaths', 'population'])
+        df = self.to_numeric(df, ['cases', 'deaths', 'population'])
         df = df.sort_values(by=['country', 'date'])
         df['cases_cum'] = df.groupby(['country'])['cases'].cumsum()
         df['deaths_cum'] = df.groupby(['country'])['deaths'].cumsum()
@@ -101,12 +110,14 @@ class WikiScraper:
     def format_date(self, date):
         """ Formats date """
         months = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Juni', 'Juli', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez']
-        date_components = date.replace('.', '').split(' ')
-        for i, month in enumerate(months):
-            date_components[0] = date_components[0].rjust(2, '0')
-            date_components[1] = date_components[1].replace(month, str(i + 1).rjust(2, '0'))
-        date = date_components[2] + '-' + date_components[1] + '-' + date_components[0]
-        return date
+        dates = date.copy()
+        date_components = date.replace('.', '').str.split(' ')
+        for i, date in enumerate(date_components):
+            for j, month in enumerate(months):
+                date[0] = date[0].rjust(2, '0')
+                date[1] = date[1].replace(month, str(j + 1).rjust(2, '0'))
+            dates.iloc[i] = date[2] + '-' + date[1] + '-' + date[0]
+        return dates
 
     def split_date(self, date):
         """ Split date column """

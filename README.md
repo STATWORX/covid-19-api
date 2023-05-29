@@ -73,7 +73,7 @@ library(httr)
 library(jsonlite)
 
 # Post to API
-response <- httr::GET(url = "https://api.statworx.com/covid", encode = "json")
+response <- httr::GET(url = "https://api.statworx.com/covid/de", encode = "json")
 
 # Convert to data frame
 content <- rawToChar(response$content)
